@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis XV Años - Alondra & Victor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,400;0,600;1,400;1,600&family=Cinzel:wght@300;400;600;700&family=Pinyon+Script&family=Montserrat:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400;1,600&family=EB+Garamond:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Paleta Plumbago, Negro y Plateado */
+            --plumbago: #4B6F8E;
+            --plumbago-dark: #2C4861;
+            --plumbago-light: #7E9CB8;
+            --silver: #C0C0C0;
+            --silver-light: #E8E8E8;
+            --black-bg: #0a0a0a;
+            
+            --text-deep: #111111;
+            --text-accent: #2C4861;
+            --text-muted: #555555;
+            
+            --bg-glass: rgba(248, 249, 250, 0.85);
+            --bg-glass-alt: rgba(235, 238, 242, 0.85);
+            --border-glass: rgba(75, 111, 142, 0.25);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body, html {
+            width: 100%; height: 100%;
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            background-color: var(--black-bg); 
+            color: var(--text-deep);
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* ====== ANIMACIONES DE SCROLL ====== */
+        .scroll-anim {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.9s cubic-bezier(0.25, 1, 0.5, 1), transform 0.9s cubic-bezier(0.25, 1, 0.5, 1);
+            will-change: opacity, transform;
+        }
+        .scroll-anim.fade-in { transform: translateY(0); scale: 0.95; }
+        .scroll-anim.slide-left { transform: translateX(-40px); }
+        .scroll-anim.slide-right { transform: translateX(40px); }
+        
+        .scroll-anim.is-visible {
+            opacity: 1;
+            transform: translate(0, 0) scale(1);
+        }
+        
+        .delay-1 { transition-delay: 0.1s; }
+        .delay-2 { transition-delay: 0.2s; }
+        .delay-3 { transition-delay: 0.3s; }
+
+        /* ====== SOBRE REDISEÑADO (NEGRO/PLATEADO) ====== */
+        #envelope-screen {
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: url('assets/imagen.jpg') no-repeat center center;
+            background-size: cover;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 1000;
+            transition: opacity 1.2s ease-in-out, visibility 1.2s;
+            overflow: hidden;
+        }
+        #envelope-screen::before {
+            content: ''; position: absolute; inset: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 0;
+        }
+        #envelope-screen.fade-out { opacity: 0; visibility: hidden; pointer-events: none; }
+
+        .env-star {
+            position: absolute; border-radius: 50%; background: var(--silver-light);
+            animation: envTwinkle var(--d, 3s) ease-in-out infinite var(--delay, 0s);
+            z-index: 1;
+        }
+        @keyframes envTwinkle {
+            0%, 100% { opacity: 0.15; transform: scale(1); }
+            50% { opacity: 0.9; transform: scale(1.4); }
+        }
+
+        .envelope-wrapper {
+            position: relative; cursor: pointer; z-index: 10;
+            display: flex; flex-direction: column; align-items: center;
+            width: 310px;
+            transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        .envelope-wrapper:hover { transform: translateY(-6px) scale(1.02); }
+
+        .envelope-body {
+            position: relative; width: 310px; height: 210px;
+            margin: 0 auto;
+        }
+        .env-svg-main {
+            width: 310px; height: 210px;
+            filter: drop-shadow(0 20px 50px rgba(0,0,0,0.8)) drop-shadow(0 6px 15px rgba(192,192,192,0.15));
+            transition: filter 0.4s ease;
+        }
+
+        .env-name-label {
+            position: absolute; top: 70px; left: 0; right: 0; text-align: center;
+            font-family: 'Pinyon Script', cursive; font-size: 34px;
+            color: var(--silver-light);
+            text-shadow: 0 0 15px rgba(255,255,255,0.2), 0 2px 8px rgba(0,0,0,0.8);
+            pointer-events: none; z-index: 15;
+            line-height: 1;
+        }
+        .env-date-label {
+            position: absolute; top: 120px; left: 0; right: 0; text-align: center;
+            font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 4px;
+            color: var(--silver); pointer-events: none; z-index: 15; text-transform: uppercase;
+        }
+
+        .env-flap-group {
+            transform-origin: 155px 0px;
+            transform-box: fill-box;
+            transition: transform 0.7s cubic-bezier(0.4,0,0.2,1) 0.1s;
+        }
+        .envelope-wrapper.open .env-flap-group { transform: rotateX(-176deg); }
+
+        .letter-peek {
+            position: absolute; left: 50%; transform: translateX(-50%);
+            width: 270px; background: linear-gradient(180deg, #ffffff 0%, #f0f0f0 100%);
+            border-radius: 3px; border: 1px solid var(--silver);
+            z-index: 5; overflow: hidden;
+            top: 20px; height: 0; opacity: 0;
+            transition: height 0.6s cubic-bezier(0.22,1,0.36,1) 0.7s,
+                        opacity 0.4s ease 0.7s, top 0.6s cubic-bezier(0.22,1,0.36,1) 0.7s;
+            display: flex; align-items: flex-start; justify-content: center;
+            padding-top: 12px;
+            box-shadow: 0 -8px 30px rgba(0,0,0,0.5);
+        }
+        .envelope-wrapper.open .letter-peek { height: 80px; opacity: 1; top: -40px; }
+        .letter-peek-inner { text-align: center; opacity: 0; transition: opacity 0.4s ease 1.1s; }
+        .envelope-wrapper.open .letter-peek-inner { opacity: 1; }
+        .letter-peek-name {
+            font-family: 'Pinyon Script', cursive; font-size: 24px; color: var(--plumbago-dark); line-height: 1.1;
+        }
+        .letter-peek-date {
+            font-family: 'Cinzel', serif; font-size: 7.5px; letter-spacing: 3px;
+            color: var(--plumbago); margin-top: 2px; text-transform: uppercase;
+        }
+
+        .wax-seal {
+            position: absolute; top: 143px; left: 50%; transform: translateX(-50%);
+            width: 62px; height: 62px; z-index: 20;
+            transition: transform 0.5s cubic-bezier(0.34,1.56,0.64,1) 0.2s, opacity 0.4s ease 0.15s;
+        }
+        .envelope-wrapper.open .wax-seal { transform: translateX(-50%) scale(0) rotate(45deg); opacity: 0; }
+
+        .hint-text {
+            margin-top: 30px; text-align: center; z-index: 10;
+            font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 4px;
+            color: var(--silver); animation: pulse 2.5s infinite; 
+            text-transform: uppercase; width: 310px;
+        }
+
+        /* ====== MAIN ====== */
+        #main-invitation {
+            min-height: 100vh; position: relative; 
+            display: flex; flex-direction: column; align-items: center;
+            padding: 60px 20px; 
+            opacity: 0; transform: translateY(20px);
+            transition: opacity 1.5s ease-out 0.6s, transform 1.5s ease-out 0.6s;
+        }
+        #main-invitation::before {
+            content: ''; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: url('assets/imagen.jpg') no-repeat center center;
+            background-size: cover; z-index: -1;
+            filter: brightness(0.4) saturate(0.8);
+            will-change: transform; image-rendering: high-quality;
+        }
+        body.content-active #main-invitation { opacity: 1; transform: translateY(0); }
+
+        .invitation-frame {
+            max-width: 500px; width: 100%;
+            border: 1px solid var(--border-glass);
+            padding: 50px 38px; text-align: center; position: relative;
+            background: var(--bg-glass);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.4) inset;
+            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border-radius: 8px; overflow: visible;
+        }
+
+        /* ====== FOTO HERO ====== */
+        .hero-photo-wrap {
+            width: 240px; height: 320px;
+            margin: 0 auto 25px auto;
+            border-radius: 120px 120px 0 0;
+            padding: 6px; 
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid var(--border-glass);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+        .hero-photo {
+            width: 100%; height: 100%; object-fit: cover;
+            border-radius: 114px 114px 0 0; 
+        }
+
+        /* ====== FOTOS INTERMEDIAS ====== */
+        .photo-showcase {
+            width: 100%;
+            margin: 30px 0;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.6);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        .photo-showcase img {
+            width: 100%; display: block; height: auto;
+            transition: transform 0.8s ease;
+        }
+        .photo-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 30px 0;
+        }
+        .photo-grid .photo-showcase { margin: 0; }
+
+        /* ====== TIPOGRAFÍA ====== */
+        .hashtag-text {
+            font-family: 'Bodoni Moda', serif; font-style: italic; font-size: 24px;
+            color: var(--plumbago); margin: 10px 0 25px 0; letter-spacing: 1px; font-weight: 500;
+        }
+        .section-heading {
+            font-family: 'Bodoni Moda', serif; font-style: italic; font-size: 26px;
+            font-weight: 500; letter-spacing: 1px; color: var(--text-accent);
+            margin-bottom: 16px; line-height: 1.3;
+        }
+        .section-heading-sm {
+            font-family: 'Bodoni Moda', serif; font-style: italic; font-size: 20px;
+            font-weight: 500; letter-spacing: 1px; color: var(--text-accent); margin-bottom: 12px;
+        }
+        .section-tag {
+            font-family: 'Bodoni Moda', serif; font-style: italic; font-size: 16px;
+            letter-spacing: 2px; color: var(--text-accent); margin-bottom: 14px; font-weight: 500;
+        }
+        .main-title {
+            font-family:'Pinyon Script',cursive; font-size: 72px; color: var(--text-deep);
+            margin-bottom: 10px; text-shadow: 0 1px 2px rgba(255,255,255,0.9); line-height: 1;
+        }
+        .phrase {
+            font-family:'EB Garamond','Cormorant Garamond',serif; font-style:italic; font-size:18px;
+            color: var(--text-deep); line-height:1.8; margin-bottom:35px; padding:0 10px; font-weight:400;
+        }
+        .family-names { 
+            font-family:'Cormorant Garamond',serif; font-size:20px; font-weight:600; 
+            font-style:italic; color:var(--text-deep); line-height:1.75; margin-top:6px; 
+        }
+        .info-label { 
+            font-family: 'Bodoni Moda', serif; font-style: italic; font-size: 11px; 
+            letter-spacing: 3px; color: var(--text-accent); text-transform: uppercase; 
+            margin-bottom: 8px; font-weight: 600; 
+        }
+        .info-block { margin-bottom: 28px; }
+
+        /* ====== DIVIDER ====== */
+        .divider-ornate { display:flex; align-items:center; justify-content:center; gap:8px; margin:28px auto; }
+        .divider-ornate::before, .divider-ornate::after { content:''; flex:1; height:1px; background:linear-gradient(to right,transparent,var(--border-glass)); }
+        .divider-ornate::after { background:linear-gradient(to left,transparent,var(--border-glass)); }
+        .divider-ornate-diamond { width:5px; height:5px; background:var(--plumbago); transform:rotate(45deg); flex-shrink:0; }
+
+        /* ====== COUNTDOWN ====== */
+        .countdown-grid { display:flex; justify-content:center; gap:10px; margin:18px auto 6px auto; max-width:340px; }
+        .countdown-item { flex:1; background:rgba(255,255,255,0.7); border:1px solid var(--border-glass); padding:12px 5px; border-radius:4px; }
+        .countdown-number { font-family:'Cinzel',serif; font-size:24px; font-weight:400; color:var(--text-accent); display:block; }
+        .countdown-label { font-family:'Montserrat',sans-serif; font-size:9px; text-transform:uppercase; letter-spacing:2px; color:var(--text-muted); font-weight:500; }
+
+        /* ====== BLOQUES VIDRIO ====== */
+        .bloque-vidrio {
+            background: var(--bg-glass-alt);
+            border: 1px solid var(--border-glass);
+            border-radius: 8px; padding: 28px 26px; margin: 0 -38px;
+            position: relative;
+        }
+
+        /* ====== CALENDARIO ====== */
+        .calendar-widget {
+            margin-top:18px; background:rgba(255,255,255,0.4); border:1px solid rgba(255,255,255,0.6);
+            border-radius:12px; overflow:hidden; box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+        }
+        .calendar-header { padding:14px 20px 10px; text-align:center; color: var(--text-deep); position:relative; }
+        .calendar-header::after { content:''; position:absolute; left:0; bottom:0; width:100%; height:1px; background:rgba(0,0,0,0.05); }
+        .calendar-year { font-family:'Cinzel',serif; font-size:10px; letter-spacing:5px; text-transform:uppercase; opacity:0.9; }
+        .calendar-month { margin-top:5px; font-family: 'Pinyon Script', cursive; font-size:36px; font-weight:400; letter-spacing:1px; }
+        .calendar-body { padding:18px 16px 20px; }
+        .calendar-days-header { display:grid; grid-template-columns:repeat(7,1fr); margin-bottom:12px; }
+        .calendar-day-name { text-align:center; font-family:'Montserrat', sans-serif; font-size:9px; letter-spacing:1.5px; color:var(--text-muted); text-transform:uppercase; }
+        .calendar-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:8px; }
+        .cal-day { width:32px; height:32px; margin:auto; display:flex; align-items:center; justify-content:center; font-family: 'Cormorant Garamond', serif; font-size:17px; color:var(--text-deep); border-radius:50%; }
+        .cal-day.empty { opacity:0; }
+        .cal-day.highlight { border: 1px solid var(--text-accent); color:var(--text-accent); font-weight:600; background: rgba(255,255,255,0.8); }
+        
+        /* ====== BOTONES ====== */
+        .btn-accion {
+            display:inline-flex; align-items:center; justify-content:center; gap:10px; width:100%;
+            padding:14px 20px; background:linear-gradient(135deg, var(--plumbago), var(--plumbago-dark));
+            color:#fff; border:none; font-family:'Cinzel',serif; font-size:9.5px; letter-spacing:3px;
+            text-transform:uppercase; cursor:pointer; font-weight:400; border-radius:4px;
+            box-shadow:0 5px 15px rgba(44, 72, 97, 0.3); transition:all 0.4s ease;
+            position:relative; overflow:hidden; text-decoration: none; margin-top: 15px;
+        }
+        .btn-accion::before { content:''; position:absolute; top:0; left:-100%; width:100%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent); transition:left 0.5s; }
+        .btn-accion:hover::before { left:100%; }
+        .btn-accion:hover { box-shadow:0 7px 20px rgba(44, 72, 97, 0.4); transform:translateY(-2px); }
+        .btn-accion svg { width:16px; height:16px; fill:#fff; flex-shrink:0; }
+
+        .btn-outline {
+            background: transparent; border: 1px solid var(--plumbago); color: var(--plumbago);
+            box-shadow: none;
+        }
+        .btn-outline svg { fill: var(--plumbago); }
+        .btn-outline:hover { background: rgba(75, 111, 142, 0.05); }
+
+        /* ====== UBICACIONES LIMPIAS ====== */
+        .ubicacion-block { text-align: left; margin-top: 20px; margin-bottom: 35px; }
+        .ubicacion-tipo { font-family:'Cinzel',serif; font-size:10px; letter-spacing:3px; color:var(--text-accent); text-transform:uppercase; margin-bottom: 4px; }
+        .ubicacion-nombre { font-family:'Cormorant Garamond',serif; font-size:24px; font-style:italic; color:var(--text-deep); margin-bottom: 8px; line-height: 1.1; }
+        .ubicacion-direccion { font-family:'Montserrat',sans-serif; font-size:12px; color:var(--text-muted); line-height:1.6; margin-bottom:15px; }
+        .map-wrapper { width:100%; height:200px; border-radius:4px; overflow:hidden; border:1px solid var(--border-glass); }
+
+        /* ====== ITINERARIO ====== */
+        .itinerario-timeline { margin-top:20px; position:relative; padding:0; }
+        .itinerario-timeline::before {
+            content:''; position:absolute; left:50%; top:0; bottom:0; width:1px;
+            background:linear-gradient(to bottom, transparent, var(--plumbago) 8%, var(--plumbago) 92%, transparent);
+            transform:translateX(-50%); opacity: 0.5;
+        }
+        .itin-row { display:flex; align-items:center; justify-content:center; position:relative; margin-bottom:15px; }
+        .itin-hora { width:calc(50% - 26px); text-align:right; padding-right:16px; font-family:'Cinzel',serif; font-size:10px; font-weight:400; letter-spacing:1px; color:var(--text-accent); flex-shrink:0; }
+        .itin-node { width:26px; height:26px; flex-shrink:0; position:relative; z-index:2; display:flex; align-items:center; justify-content:center; }
+        .itin-node::before { content:'✦'; font-size:16px; color:var(--plumbago); line-height:1; }
+        .itin-evento { width:calc(50% - 26px); padding-left:16px; flex-shrink:0; }
+        .itin-evento-nombre { font-family:'Cormorant Garamond',serif; font-style:italic; font-size:20px; color:var(--text-deep); line-height:1.1; text-align:left; }
+
+        /* ====== FORMS ====== */
+        .rsvp-input-wrap { margin-bottom:18px; text-align: left; }
+        .rsvp-input-label { font-family:'Cinzel',serif; font-size:9px; letter-spacing:2px; color:var(--text-accent); text-transform:uppercase; display:block; margin-bottom:8px; }
+        .rsvp-input { width:100%; padding:13px 16px; font-family:'Cormorant Garamond',serif; font-size:17px; font-style:italic; color:var(--text-deep); background:rgba(255,255,255,0.7); border:1px solid var(--border-glass); border-radius:4px; outline:none; transition:border-color 0.3s; }
+        .rsvp-input:focus { border-color:var(--plumbago); background:#fff; }
+        .rsvp-input::placeholder { font-style:italic; color:#999; }
+
+        /* ====== MÚSICA ====== */
+        #music-control-btn {
+            position:fixed; bottom:25px; right:25px; width:48px; height:48px; border-radius:50%;
+            background:rgba(20,20,20,0.85); border:1px solid var(--silver); color:#fff;
+            display:flex; justify-content:center; align-items:center; cursor:pointer; z-index:999;
+            box-shadow:0 4px 15px rgba(0,0,0,0.5); opacity:0; visibility:hidden;
+            transition:opacity 0.5s, visibility 0.5s, transform 0.3s; backdrop-filter:blur(8px);
+        }
+        #music-control-btn:hover { transform:scale(1.08); }
+        #music-control-btn.visible { opacity:1; visibility:visible; }
+        #music-control-btn svg { width:20px; height:20px; fill:#fff; }
+
+        @media(max-width:400px){
+            .main-title{font-size:58px}
+            .invitation-frame{padding:40px 22px}
+            .bloque-vidrio{margin:0 -22px}
+        }
+    </style>
+</head>
+<body>
+    <!-- Audio tag -->
+    <audio id="song" src="assets/song.mp3" loop preload="auto"></audio>
+    <button id="music-control-btn" onclick="toggleMusic()" aria-label="Control de música">
+        <svg id="music-icon" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+    </button>
+
+    <!-- ====== SOBRE DE ENTRADA ====== -->
+    <div id="envelope-screen">
+        <div id="env-stars"></div>
+        <div class="envelope-wrapper" id="envelopeWrapperNew">
+            <div class="letter-peek">
+                <div class="letter-peek-inner">
+                    <div class="letter-peek-name">Alondra & Victor</div>
+                    <div class="letter-peek-date">05 · Sep · 2026</div>
+                </div>
+            </div>
+            <div class="envelope-body">
+                <svg class="env-svg-main" viewBox="0 0 310 210" fill="none">
+                    <defs>
+                        <!-- Gradientes Plateados y Negros -->
+                        <linearGradient id="silverGrad" x1="0" y1="0" x2="310" y2="210" gradientUnits="userSpaceOnUse">
+                            <stop offset="0%" stop-color="#E8E8E8"/>
+                            <stop offset="50%" stop-color="#A0A0A0"/>
+                            <stop offset="100%" stop-color="#707070"/>
+                        </linearGradient>
+                        <linearGradient id="envBase2" x1="0" y1="0" x2="0" y2="210" gradientUnits="userSpaceOnUse">
+                            <stop offset="0%" stop-color="#1a1a1a"/>
+                            <stop offset="100%" stop-color="#050505"/>
+                        </linearGradient>
+                        <linearGradient id="envLeft2" x1="0" y1="0" x2="155" y2="105" gradientUnits="userSpaceOnUse">
+                            <stop offset="0%" stop-color="#2a2a2a"/>
+                            <stop offset="100%" stop-color="#111111"/>
+                        </linearGradient>
+                        <linearGradient id="envRight2" x1="310" y1="0" x2="155" y2="105" gradientUnits="userSpaceOnUse">
+                            <stop offset="0%" stop-color="#222222"/>
+                            <stop offset="100%" stop-color="#0a0a0a"/>
+                        </linearGradient>
+                        <linearGradient id="envBottom2" x1="155" y1="210" x2="155" y2="130" gradientUnits="userSpaceOnUse">
+                            <stop offset="0%" stop-color="#2c2c2c"/>
+                            <stop offset="100%" stop-color="#151515"/>
+                        </linearGradient>
+                        <linearGradient id="flapGrad2" x1="0" y1="0" x2="310" y2="140" gradientUnits="userSpaceOnUse">
+                            <stop offset="0%" stop-color="#333333"/>
+                            <stop offset="100%" stop-color="#1a1a1a"/>
+                        </linearGradient>
+                    </defs>
+                    <rect width="310" height="210" rx="5" fill="url(#envBase2)"/>
+                    <rect x="0.4" y="0.4" width="309.2" height="209.2" rx="4.6" stroke="url(#silverGrad)" stroke-width="1.2" fill="none" opacity="0.8"/>
+                    <polygon points="0,0 155,105 0,210" fill="url(#envLeft2)"/>
+                    <polygon points="310,0 155,105 310,210" fill="url(#envRight2)"/>
+                    <polygon points="0,210 155,105 310,210" fill="url(#envBottom2)"/>
+                    <line x1="0" y1="0" x2="155" y2="105" stroke="url(#silverGrad)" stroke-width="0.8" opacity="0.4"/>
+                    <line x1="310" y1="0" x2="155" y2="105" stroke="url(#silverGrad)" stroke-width="0.8" opacity="0.4"/>
+                    <line x1="0" y1="210" x2="155" y2="105" stroke="url(#silverGrad)" stroke-width="0.8" opacity="0.3"/>
+                    <line x1="310" y1="210" x2="155" y2="105" stroke="url(#silverGrad)" stroke-width="0.8" opacity="0.3"/>
+                    
+                    <g class="env-flap-group">
+                        <polygon points="0,0 155,125 310,0" fill="url(#flapGrad2)"/>
+                        <polyline points="0,0 155,125 310,0" stroke="url(#silverGrad)" stroke-width="1" fill="none" opacity="0.7"/>
+                    </g>
+                </svg>
+                <div class="env-name-label">Alondra & Victor</div>
+                <div class="env-date-label">Mis XV Años &nbsp;·&nbsp; 2026</div>
+
+                <div class="wax-seal">
+                    <svg viewBox="0 0 62 62" fill="none">
+                        <defs>
+                            <radialGradient id="sealGrad2" cx="38%" cy="32%" r="65%">
+                                <stop offset="0%" stop-color="#FFFFFF"/>
+                                <stop offset="40%" stop-color="#C0C0C0"/>
+                                <stop offset="80%" stop-color="#808080"/>
+                                <stop offset="100%" stop-color="#505050"/>
+                            </radialGradient>
+                        </defs>
+                        <path d="M31 3 L34 9 L40 6 L41 13 L48 12 L47 19 L54 20 L51 26 L57 30 L52 34 L56 40 L50 42 L51 49 L44 48 L42 55 L36 52 L31 58 L26 52 L20 55 L18 48 L11 49 L12 42 L6 40 L10 34 L5 30 L11 26 L8 20 L15 19 L14 12 L21 13 L22 6 L28 9 Z" fill="url(#sealGrad2)"/>
+                        <circle cx="31" cy="31" r="18" fill="#B0B0B0"/>
+                        <circle cx="31" cy="31" r="16" fill="none" stroke="#E0E0E0" stroke-width="0.5"/>
+                        <text x="31" y="36" font-family="'Cinzel', serif" font-size="14" fill="#505050" text-anchor="middle">XV</text>
+                    </svg>
+                </div>
+            </div>
+        </div>
+        <div class="hint-text">Toca para abrir</div>
+    </div>
+
+    <!-- ====== CONTENIDO PRINCIPAL ====== -->
+    <main id="main-invitation">
+        <div class="invitation-frame">
+
+            <div class="scroll-anim fade-in">
+                <div class="hero-photo-wrap">
+                    <img src="assets/hero.jpg" alt="Alondra y Victor" class="hero-photo">
+                </div>
+                <div class="section-tag">Mis XV Años</div>
+                <h1 class="main-title">Alondra &<br>Victor</h1>
+                <div class="hashtag-text">#XVAlondraYVictor</div>
+                <p class="phrase">"La vida es un lienzo en blanco y hoy comenzamos a pintarlo con los colores de nuestros sueños."</p>
+            </div>
+
+            <!-- FOTO 1 -->
+            <div class="photo-showcase scroll-anim slide-up delay-1">
+                <img src="assets/foto1.jpg" alt="Galería 1">
+            </div>
+
+            <div class="divider-ornate scroll-anim"><div class="divider-ornate-diamond"></div></div>
+
+            <div class="info-block scroll-anim slide-left">
+                <div class="info-label">Con la bendición de nuestros padres</div>
+                <div class="family-names">Miguel Ángel Rodríguez<br>María Sandra Salgado</div>
+            </div>
+            
+            <div class="info-block scroll-anim slide-right delay-1">
+                <div class="info-label">Nuestros Padrinos</div>
+                <div style="font-family:'Cormorant Garamond',serif; font-style:italic; font-size:16px; color:var(--text-muted); margin-top:10px;">De Él</div>
+                <div class="family-names" style="margin-top:2px;">Gladys Ivette Jiménez Rodríguez<br>Héctor Rafael Ibarra Domínguez</div>
+                
+                <div style="font-family:'Cormorant Garamond',serif; font-style:italic; font-size:16px; color:var(--text-muted); margin-top:12px;">De Ella</div>
+                <div class="family-names" style="margin-top:2px;">Juan Carlos Rodríguez Castañeda<br>María Isabel González Cervantes</div>
+            </div>
+
+            <!-- FOTO 2 y 3 EN GRID -->
+            <div class="photo-grid scroll-anim fade-in delay-2">
+                <div class="photo-showcase"><img src="assets/foto2.jpg" alt="Galería 2"></div>
+                <div class="photo-showcase"><img src="assets/foto3.jpg" alt="Galería 3"></div>
+            </div>
+
+            <div class="divider-ornate scroll-anim"><div class="divider-ornate-diamond"></div></div>
+
+            <div class="scroll-anim fade-in">
+                <div class="section-heading-sm">Cuenta Regresiva</div>
+                <div class="countdown-grid" id="countdown-timer">
+                    <div class="countdown-item"><span class="countdown-number" id="days">00</span><span class="countdown-label">Días</span></div>
+                    <div class="countdown-item"><span class="countdown-number" id="hours">00</span><span class="countdown-label">Hrs</span></div>
+                    <div class="countdown-item"><span class="countdown-number" id="minutes">00</span><span class="countdown-label">Min</span></div>
+                    <div class="countdown-item"><span class="countdown-number" id="seconds">00</span><span class="countdown-label">Seg</span></div>
+                </div>
+            </div>
+
+            <!-- FOTO 4 -->
+            <div class="photo-showcase scroll-anim slide-up delay-1">
+                <img src="assets/foto4.jpg" alt="Galería 4">
+            </div>
+
+            <div class="divider-ornate scroll-anim"><div class="divider-ornate-diamond"></div></div>
+
+            <div class="bloque-vidrio scroll-anim fade-in">
+                <div class="section-heading">Fecha</div>
+                <div style="font-family:'Cinzel',serif;font-size:26px;font-weight:300;color:var(--text-deep);letter-spacing:3px;">05 · SEP · 2026</div>
+                <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:18px;color:var(--text-accent);margin-top:5px;">Sábado</div>
+                <div class="calendar-widget">
+                    <div class="calendar-header">2026 <div class="calendar-month">Septiembre</div></div>
+                    <div class="calendar-body">
+                        <div class="calendar-days-header">
+                            <span class="calendar-day-name">Dom</span><span class="calendar-day-name">Lun</span><span class="calendar-day-name">Mar</span><span class="calendar-day-name">Mié</span><span class="calendar-day-name">Jue</span><span class="calendar-day-name">Vie</span><span class="calendar-day-name">Sáb</span>
+                        </div>
+                        <div class="calendar-grid">
+                            <span class="cal-day empty"></span><span class="cal-day empty"></span>
+                            <span class="cal-day">1</span><span class="cal-day">2</span><span class="cal-day">3</span><span class="cal-day">4</span><span class="cal-day highlight">5</span>
+                            <span class="cal-day">6</span><span class="cal-day">7</span><span class="cal-day">8</span><span class="cal-day">9</span><span class="cal-day">10</span><span class="cal-day">11</span><span class="cal-day">12</span>
+                            <span class="cal-day">13</span><span class="cal-day">14</span><span class="cal-day">15</span><span class="cal-day">16</span><span class="cal-day">17</span><span class="cal-day">18</span><span class="cal-day">19</span>
+                            <span class="cal-day">20</span><span class="cal-day">21</span><span class="cal-day">22</span><span class="cal-day">23</span><span class="cal-day">24</span><span class="cal-day">25</span><span class="cal-day">26</span>
+                            <span class="cal-day">27</span><span class="cal-day">28</span><span class="cal-day">29</span><span class="cal-day">30</span>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn-accion btn-outline" onclick="addToCalendar()">
+                    <svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5C3.89 3 3 3.9 3 5v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zm0 16H5V9h14v10zm0-12H5V5h14v2zM7 11h5v5H7z"/></svg>
+                    Agregar a mi Calendario
+                </button>
+            </div>
+
+            <!-- FOTO 5 -->
+            <div class="photo-showcase scroll-anim slide-up delay-1">
+                <img src="assets/foto5.jpg" alt="Galería 5">
+            </div>
+
+            <div class="divider-ornate scroll-anim"><div class="divider-ornate-diamond"></div></div>
+
+            <!-- UBICACIONES LIMPIAS -->
+            <div class="scroll-anim fade-in">
+                <div class="section-heading">Ubicaciones</div>
+                
+                <div class="ubicacion-block scroll-anim slide-left delay-1">
+                    <div class="ubicacion-tipo">Ceremonia Religiosa - 19:00 Hrs</div>
+                    <div class="ubicacion-nombre">Parroquia Virgen de Guadalupe</div>
+                    <div class="ubicacion-direccion">Modelo de Evangelización</div>
+                    <div class="map-wrapper">
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14936.463594462391!2d-103.25609879999999!3d20.6241322!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8428b487c1372807%3A0xcf33b2913ba4acd0!2sParroquia%20%22Virgen%20de%20Guadalupe%20Modelo%20de%20Evangelizaci%C3%B3n%22!5e0!3m2!1ses-419!2smx!4v1784492386092!5m2!1ses-419!2smx" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+                    </div>
+                    <a href="https://maps.app.goo.gl/XVwNv6gU1vubHDN36?g_st=aw" target="_blank" class="btn-accion btn-outline">Ver en Google Maps</a>
+                </div>
+
+                <div class="ubicacion-block scroll-anim slide-right delay-2">
+                    <div class="ubicacion-tipo">Recepción - 20:30 Hrs</div>
+                    <div class="ubicacion-nombre">Quinta Real Las Palmas</div>
+                    <div class="ubicacion-direccion">División del norte no. 169 Tonalá Jalisco<br>Entre Doroteo Arango y Hacienda Canutillo</div>
+                    <div class="map-wrapper">
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3734.2050630396816!2d-103.2568453!3d20.6204967!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8428b48675612f4d%3A0x73397037df19eaf0!2sQuinta%20Real%20las%20Palmas!5e0!3m2!1ses-419!2smx!4v1784492455449!5m2!1ses-419!2smx" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+                    </div>
+                    <a href="https://maps.app.goo.gl/6LQ1eEqPqg5qH7hd6?g_st=aw" target="_blank" class="btn-accion btn-outline">Ver en Google Maps</a>
+                </div>
+            </div>
+
+            <!-- FOTO 6 y 7 EN GRID -->
+            <div class="photo-grid scroll-anim fade-in delay-1">
+                <div class="photo-showcase"><img src="assets/foto6.jpg" alt="Galería 6"></div>
+                <div class="photo-showcase"><img src="assets/foto7.jpg" alt="Galería 7"></div>
+            </div>
+
+            <div class="divider-ornate scroll-anim"><div class="divider-ornate-diamond"></div></div>
+
+            <div class="scroll-anim fade-in">
+                <div class="section-heading">Itinerario</div>
+                <div class="itinerario-timeline">
+                    <div class="itin-row scroll-anim slide-up delay-1">
+                        <span class="itin-hora">19:00 Hrs</span>
+                        <div class="itin-node"></div>
+                        <div class="itin-evento"><span class="itin-evento-nombre">Misa</span></div>
+                    </div>
+                    <div class="itin-row scroll-anim slide-up delay-2">
+                        <span class="itin-hora">20:30 Hrs</span>
+                        <div class="itin-node"></div>
+                        <div class="itin-evento"><span class="itin-evento-nombre">Recepción</span></div>
+                    </div>
+                    <div class="itin-row scroll-anim slide-up delay-3">
+                        <span class="itin-hora">21:00 Hrs</span>
+                        <div class="itin-node"></div>
+                        <div class="itin-evento"><span class="itin-evento-nombre">Cena</span></div>
+                    </div>
+                    <div class="itin-row scroll-anim slide-up">
+                        <span class="itin-hora">22:00 Hrs</span>
+                        <div class="itin-node"></div>
+                        <div class="itin-evento"><span class="itin-evento-nombre">Vals</span></div>
+                    </div>
+                    <div class="itin-row scroll-anim slide-up">
+                        <span class="itin-hora">23:00 Hrs</span>
+                        <div class="itin-node"></div>
+                        <div class="itin-evento"><span class="itin-evento-nombre">Baile</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FOTO 8 -->
+            <div class="photo-showcase scroll-anim slide-up delay-1">
+                <img src="assets/foto8.jpg" alt="Galería 8">
+            </div>
+
+            <div class="divider-ornate scroll-anim"><div class="divider-ornate-diamond"></div></div>
+
+            <div class="bloque-vidrio scroll-anim fade-in">
+                <div class="section-heading">Código de Vestimenta</div>
+                <div style="font-family:'Cinzel',serif;font-size:22px;font-weight:400;letter-spacing:6px;color:var(--text-deep);margin-top:2px;">Formal</div>
+                <div style="display:flex;justify-content:center;gap:22px;margin-top:16px;">
+                    <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+                        <svg viewBox="0 0 24 24" width="30" height="30" fill="var(--text-accent)"><path d="M16 2l-1 3H9L8 2H4l2 5v13h12V7l2-5h-4M9.5 10a1.5 1.5 0 0 1 1.5 1.5A1.5 1.5 0 0 1 9.5 13 1.5 1.5 0 0 1 8 11.5 1.5 1.5 0 0 1 9.5 10m5 0a1.5 1.5 0 0 1 1.5 1.5A1.5 1.5 0 0 1 14.5 13 1.5 1.5 0 0 1 13 11.5 1.5 1.5 0 0 1 14.5 10Z"/></svg>
+                        <span style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;color:var(--text-accent);text-transform:uppercase;">Damas</span>
+                    </div>
+                    <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+                        <svg viewBox="0 0 24 24" width="30" height="30" fill="var(--text-accent)"><path d="M7 2h10l-1.5 8H8.5L7 2M8.5 11l-1 11h9l-1-11H8.5M12 13v4m-2-2h4"/></svg>
+                        <span style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;color:var(--text-accent);text-transform:uppercase;">Caballeros</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FOTO 9 -->
+            <div class="photo-showcase scroll-anim slide-up delay-1">
+                <img src="assets/foto9.jpg" alt="Galería 9">
+            </div>
+
+            <div class="divider-ornate scroll-anim"><div class="divider-ornate-diamond"></div></div>
+
+            <div class="scroll-anim fade-in">
+                <div class="section-heading">Mesa de Regalos</div>
+                <p class="phrase" style="margin-bottom: 20px;">Tu presencia es nuestro mejor regalo, pero si deseas tener un detalle con nosotros, te dejamos algunas sugerencias.</p>
+                <a href="https://www.amazon.com.mx/registries/gl/guest-view/DQ6QU2ATP4E0?ref_=cm_sw_r_apannnn_ggr-subnav-share_A2BGS22QNYF6R0X1727J&language=en-US" target="_blank" class="btn-accion">Mesa de Regalos - Victor</a>
+                <a href="https://www.amazon.com.mx/registries/gl/guest-view/4K0EGPOSWED4?ref_=cm_sw_r_apann_ggr-subnav-share_5HB1Q6QGS80MHJ390J31&language=en-US" target="_blank" class="btn-accion">Mesa de Regalos - Alondra</a>
+            </div>
+
+            <!-- FOTO 10 -->
+            <div class="photo-showcase scroll-anim slide-up delay-1">
+                <img src="assets/foto10.jpg" alt="Galería 10">
+            </div>
+
+            <div class="divider-ornate scroll-anim"><div class="divider-ornate-diamond"></div></div>
+
+            <div class="bloque-vidrio scroll-anim fade-in">
+                <div class="section-heading">Cámara en Vivo</div>
+                <p class="phrase" style="margin-bottom: 15px;">Ayúdanos a capturar los mejores momentos de nuestra noche. Sube tus fotos y videos durante el evento en el siguiente enlace.</p>
+                
+                <a href="https://drive.google.com/drive/folders/1uxozzPM7xWWsdAffu36MkWHmZafT2ms6?usp=sharing" target="_blank" class="btn-accion">
+                    <svg viewBox="0 0 24 24"><path d="M4 4h3l2-2h6l2 2h3c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2zm8 3c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zm0 8c-1.65 0-3-1.35-3-3s1.35-3 3-3 3 1.35 3 3-1.35 3-3 3z"/></svg>
+                    Subir Fotos Aquí
+                </a>
+            </div>
+
+            <!-- FOTO 11 -->
+            <div class="photo-showcase scroll-anim slide-up delay-1">
+                <img src="assets/foto11.jpg" alt="Galería 11">
+            </div>
+
+            <div class="divider-ornate scroll-anim"><div class="divider-ornate-diamond"></div></div>
+
+            <div class="scroll-anim fade-in">
+                <div class="section-heading">Confirmación de Asistencia</div>
+                <p class="phrase">Será un honor contar con tu presencia. Por favor confírmanos tu asistencia enviándonos un mensaje.</p>
+                
+                <div class="rsvp-input-wrap">
+                    <label class="rsvp-input-label" for="guest-name">Nombre Completo</label>
+                    <input type="text" id="guest-name" class="rsvp-input" placeholder="Escribe tu nombre y el de tus acompañantes...">
+                </div>
+                <button onclick="sendRSVP()" class="btn-accion">
+                    <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+                    Confirmar por WhatsApp
+                </button>
+            </div>
+
+            <!-- FOTO 12 -->
+            <div class="photo-showcase scroll-anim slide-up delay-1">
+                <img src="assets/foto12.jpg" alt="Galería 12">
+            </div>
+
+            <div class="divider-ornate scroll-anim"><div class="divider-ornate-diamond"></div></div>
+
+            <div class="bloque-vidrio scroll-anim fade-in">
+                <div class="section-heading">Muro de los Buenos Deseos</div>
+                <p class="phrase" style="margin-bottom: 20px;">Déjanos un mensaje, será un hermoso recuerdo para nosotros.</p>
+                <form id="wish-form" style="text-align: left;" onsubmit="sendWish(event)">
+                    <div class="rsvp-input-wrap">
+                        <label class="rsvp-input-label" for="wish-nombre">Tu nombre</label>
+                        <input type="text" id="wish-nombre" class="rsvp-input" placeholder="Ej. Familia López" required>
+                    </div>
+                    <div class="rsvp-input-wrap">
+                        <label class="rsvp-input-label" for="wish-mensaje">Mensaje</label>
+                        <textarea id="wish-mensaje" class="rsvp-input" placeholder="Escribe aquí tus buenos deseos..." required style="min-height: 120px; resize: vertical; padding-top: 15px;"></textarea>
+                    </div>
+                    <button type="submit" class="btn-accion">
+                        <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                        Enviar Mensaje
+                    </button>
+                </form>
+            </div>
+
+            <div class="divider-ornate scroll-anim" style="margin-top:40px;"><div class="divider-ornate-diamond"></div></div>
+            <div class="scroll-anim fade-in" style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:3px;color:var(--text-muted);font-weight:400;text-transform:uppercase;">Invytia Premium</div>
+
+        </div>
+    </main>
+
+    <script>
+        let isPlaying = false;
+        const WA_NUMBER = "523339932635"; // Número proporcionado para Confirmaciones y Deseos
+
+        /* ===== SCROLL ANIMATIONS OBSERVER ===== */
+        document.addEventListener('DOMContentLoaded', () => {
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.15
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                        observer.unobserve(entry.target); 
+                    }
+                });
+            }, observerOptions);
+
+            const scrollElements = document.querySelectorAll('.scroll-anim');
+            scrollElements.forEach(el => observer.observe(el));
+        });
+
+        /* ===== ENVELOPE LOGIC ===== */
+        (function(){
+            const c = document.getElementById('env-stars');
+            if (!c) return;
+            c.style.cssText = 'position:absolute;inset:0;overflow:hidden;';
+            for (let i = 0; i < 40; i++) {
+                const s = document.createElement('div');
+                s.className = 'env-star';
+                const size = Math.random() * 2.5 + 1;
+                s.style.cssText = `width:${size}px;height:${size}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${(Math.random()*3+1.5).toFixed(1)}s;--delay:-${(Math.random()*4).toFixed(1)}s;`;
+                c.appendChild(s);
+            }
+        })();
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const wrapper = document.getElementById('envelopeWrapperNew');
+            if (wrapper) {
+                ['click','touchstart'].forEach(ev => {
+                    wrapper.addEventListener(ev, (e) => {
+                        if (e.type === 'click' && 'ontouchstart' in window) return;
+                        openEnvelope();
+                    }, { passive: false });
+                });
+            }
+        });
+
+        function openEnvelope() {
+            const wrapper = document.getElementById('envelopeWrapperNew');
+            const screen = document.getElementById('envelope-screen');
+            const audio = document.getElementById('song');
+            const musicBtn = document.getElementById('music-control-btn');
+            if (!wrapper || wrapper.classList.contains('open')) return;
+            wrapper.classList.add('open');
+            if (audio) audio.play().then(() => { isPlaying = true; updateMusicIcon(); }).catch(() => {});
+            setTimeout(() => {
+                screen.classList.add('fade-out');
+                document.body.classList.add('content-active');
+                if (musicBtn) musicBtn.classList.add('visible');
+            }, 1400);
+        }
+
+        /* ===== AUDIO CONTROLS ===== */
+        function toggleMusic(){
+            const audio=document.getElementById('song');
+            if(!audio)return;
+            if(isPlaying){audio.pause();isPlaying=false;}
+            else{audio.play().catch(()=>{});isPlaying=true;}
+            updateMusicIcon();
+        }
+        function updateMusicIcon(){
+            const icon=document.getElementById('music-icon');
+            if(!icon)return;
+            icon.innerHTML=isPlaying?'<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>':'<path d="M8 5v14l11-7z"/>';
+        }
+
+        /* ===== WHATSAPP ACTIONS ===== */
+        function sendRSVP(){
+            const inp = document.getElementById('guest-name');
+            if(!inp || !inp.value.trim()){
+                alert('Por favor ingresa tu nombre completo.');
+                inp.focus();
+                return;
+            }
+            const msg = `¡Hola! Confirmo mi asistencia a los XV Años de Alondra y Victor.%0A%0A• Nombre: ${inp.value.trim()}`;
+            window.open(`https://wa.me/${WA_NUMBER}?text=${msg}`,'_blank');
+        }
+
+        function sendWish(e) {
+            e.preventDefault();
+            const name = document.getElementById('wish-nombre').value.trim();
+            const wish = document.getElementById('wish-mensaje').value.trim();
+            if(!name || !wish) return;
+
+            const msg = `¡Hola! Dejo mis mejores deseos para Alondra y Victor:%0A%0A"${wish}"%0A%0A- ${name}`;
+            window.open(`https://wa.me/${WA_NUMBER}?text=${msg}`,'_blank');
+            
+            // Reset visual
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '¡Mensaje Preparado!';
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                e.target.reset();
+            }, 3000);
+        }
+
+        /* ===== ADD TO CALENDAR ===== */
+        function addToCalendar(){
+            const ics=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//XV Años Alondra & Victor//ES','BEGIN:VEVENT','DTSTART:20260905T190000','DTEND:20260906T030000','SUMMARY:XV Años de Alondra y Victor','DESCRIPTION:Misa 19:00 Hrs en Parroquia Virgen de Guadalupe • Recepción 20:30 Hrs en Quinta Real Las Palmas','LOCATION:Quinta Real Las Palmas\\, División del Norte 169\\, Tonalá Jalisco','STATUS:CONFIRMED','END:VEVENT','END:VCALENDAR'].join('\r\n');
+            const a=document.createElement('a');
+            a.href=URL.createObjectURL(new Blob([ics],{type:'text/calendar;charset=utf-8'}));
+            a.download='XV-Alondra-y-Victor.ics';
+            document.body.appendChild(a);a.click();document.body.removeChild(a);
+        }
+
+        /* ===== CUENTA REGRESIVA ===== */
+        const targetDate = new Date("September 5, 2026 00:00:00").getTime();
+        setInterval(()=>{
+            const left = targetDate - Date.now();
+            if(left < 0){
+                document.getElementById("countdown-timer").innerHTML="<div style='font-family:\"Cinzel\",serif;color:var(--text-accent);letter-spacing:2px;font-size:14px;'>¡Hoy es el Gran Día!</div>";
+                return;
+            }
+            const d = Math.floor(left/86400000), 
+                  h = Math.floor(left%86400000/3600000), 
+                  m = Math.floor(left%3600000/60000), 
+                  s = Math.floor(left%60000/1000);
+                  
+            document.getElementById("days").innerText = d < 10 ? "0"+d : d;
+            document.getElementById("hours").innerText = h < 10 ? "0"+h : h;
+            document.getElementById("minutes").innerText = m < 10 ? "0"+m : m;
+            document.getElementById("seconds").innerText = s < 10 ? "0"+s : s;
+        },1000);
+    </script>
+</body>
+</html>
